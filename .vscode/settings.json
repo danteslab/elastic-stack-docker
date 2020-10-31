@@ -5,7 +5,8 @@
     "**/node_modules": true,
     "**/yarn.lock": true,
     "**/.cache": true,
-    "**/public": true
+    "**/public": true,
+    "var": true
   },
   "editor.formatOnSave": true,
   "workbench.iconTheme": "vscode-icons",
