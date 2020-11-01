@@ -1,27 +1,12 @@
-# tsc-simple-starter
+# ElasticSearch + kibana
 
 Typescript Basic Template 
 
-# Use
+![](https://i.imgur.com/6B1JhMk.png)
 
-```
-git clone https://github.com/dantehemerson/tsc-simple-starter.git --depth=1 <project-name>
-```
+## How to start
+1.- Configure **max virtual memory areas**(`vm.max_map_coun`)
+increase to at least [262144]
 
-The move to your project
+[Linux Ref](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html)
 
-```
-cd <project-name>
-```
-
-and remove repo
-
-```
-rm -rf .git
-```
-
-and start yours
-
-```
-git init
-```

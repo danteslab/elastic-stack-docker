@@ -60,7 +60,9 @@ services:
 
 volumes:
   odfe-data1:
+    driver: local
   odfe-data2:
+    driver: local
 
 networks:
   odfe-net:
