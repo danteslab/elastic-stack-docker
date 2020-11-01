@@ -312,3 +312,164 @@ PUT restaurantes/_doc/1
     }
   }
 }
+
+
+
+PUT /restaurantes/_doc/1
+{
+  "nombre": "McDonalds",
+  "categorias": [
+    { "nombre": "Comida Rápida", "principal": true },
+    { "nombre": "Desayunos", "principal": false },
+    { "nombre": "Hamburguesas", "principal": false }
+  ]
+}
+
+PUT restaurantes/_doc/2
+{
+  "nombre": "Burger King",
+  "categorias": [
+    { "nombre": "Comida Rápida", "principal": false },
+    { "nombre": "Hamburguesas", "principal": true }
+  ]
+}
+
+PUT restaurantes/_doc/3
+{
+  "nombre": "Subway",
+  "categorias": [
+    { "nombre": "Comida Saludable", "principal": false },
+    { "nombre": "Sándwiches", "principal": true }
+  ]
+}
+
+
+# Nested search
+GET restaurantes/_search
+{
+  "query": {
+    "nested": {
+      "path": "categorias",
+      "query": {
+        "bool": {
+          "must": {
+            "term": { "categorias.nombre": "Comida Saludable" }
+          }
+        }
+      }
+    }
+  }
+}
+
+# Búsqueda No. 2 - Ultima modificación desde la segunda mitad de Enero hasta finales de Febrero
+GET restaurantes/_search
+{
+  "_source": ["nombre", "ultimaModificacion.fecha"],
+  "query": {
+    "range": {
+      "ultimaModificacion.fecha": {
+        "gte": "2020-01-15",
+        "lt": "2020-03-01"
+      }
+    }
+  }
+}
+
+
+# Agregaciones
+# Obtenemos métricas de los restaurantes actuales
+GET restaurantes/_search
+{
+    "aggs" : {
+        "calificacionPromedio": { "avg" : { "field" : "calificacion" } },
+        "calificacionMaxima": { "max" : { "field" : "calificacion" } },
+        "calificacionMinima": { "min" : { "field" : "calificacion" } }
+    }
+}
+
+# Indicamos que para los restaurantes sin calificación, por defecto es 3.0 (SUBWAY)
+GET restaurantes/_search
+{
+    "aggs" : {
+        "calificacionPromedio" : {
+            "avg" : {
+                "field" : "calificacion",
+                "missing": 3.0
+            } 
+        }
+    }
+}
+
+
+
+
+
+# Paso 1 - Vemos todos los datos en nuestro directorio de restaurantes
+# GET /restaurantes/_search
+# Contamos con todos los campos necesarios
+# Platos y Categorías son objetos anidados de un Restaurante
+# Tenemos los datos básicos del restaurante
+# Guardamos la información del Usuario que modificó por última vez al restaurante
+# Paso 2 - Filtrar el directorio usando datos de Restaurantes y Platos a la vez
+# Obtener todos los restaurantes que:
+# Estén ubicados en el Barrio Centro o en el Barrio Occidental
+# Que sean de comida rápida ó que vendan nachos
+GET /restaurantes/_search
+{
+  "query": {
+    "bool": {
+      "must": [
+        {
+          "bool": {
+            "should": [
+              {
+                "match": {
+                  "direccion": "centro"
+                }
+              },
+              {
+                "match": {
+                  "direccion": "occidental"
+                }
+              }
+            ]
+          }
+        },
+        {
+          "bool": {
+            "should": [
+              {
+                "nested": {
+                  "path": "categorias",
+                  "query": {
+                    "bool": {
+                      "must": {
+                        "term": {
+                          "categorias.nombre": "Comida Rápida"
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "nested": {
+                  "path": "platos",
+                  "query": {
+                    "bool": {
+                      "must": {
+                        "match": {
+                          "platos.descripcion": "nachos"
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+}
