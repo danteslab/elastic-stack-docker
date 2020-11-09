@@ -7,6 +7,8 @@ Typescript Basic Template
 ## How to start
 1.- Configure **max virtual memory areas**(`vm.max_map_coun`)
 increase to at least [262144]
-
+```
+sysctl -w vm.max_map_count=262144
+```
 [Linux Ref](https://www.elastic.co/guide/en/elasticsearch/reference/current/vm-max-map-count.html)
 
